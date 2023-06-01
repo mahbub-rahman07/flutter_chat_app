@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:superchat/state/ChatState/LoginState.dart';
+import 'package:superchat/state/ChatState/ChatState.dart';
 import 'package:superchat/widgets/ChatInput.dart';
 import 'package:superchat/widgets/ChatItem.dart';
 import '../model/ChatMessageEntity.dart';
@@ -32,28 +32,14 @@ class ChatScreenState extends ConsumerWidget {
       _shouldAutoscroll = false;
     }
   }
-  void onMessageSent(ChatMessageEntity entity){
-   // chatState.newMsg(entity);
-    //chatState.addItem(entity);
-    // _scrollController.animateTo(
-    //   _scrollController.position.maxScrollExtent,
-    //   curve: Curves.linear,
-    //   duration: const Duration(seconds: 1),
-    // );
-    if (_scrollController.hasClients && _shouldAutoscroll) {
-      _scrollToBottom();
-    }
 
-    if (!_firstAutoscrollExecuted && _scrollController.hasClients) {
-      _scrollToBottom();
-    }
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final username = ModalRoute.of(context)!.settings.arguments as String;
     //chatState = ref.watch(ItemList.provider.notifier);
-    final list = ref.watch(ItemList.provider);
+    final provider = ref.watch(itemListProvider.notifier);
+    final list = ref.watch(itemListChangeProvider).getMessages();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -86,11 +72,18 @@ class ChatScreenState extends ConsumerWidget {
                             "Mahbub"
                             ? Alignment.centerRight
                             : Alignment.centerLeft,
-                        entity: list[index]);
+                        entity:  list[index]);
                   })),
           ChatInput(
-            onSubmit: onMessageSent,
-            notfier: ref.watch(ItemList.provider.notifier)
+            onSubmit: (ChatMessageEntity msg){
+              ref.watch(itemListChangeProvider).addItem(msg);
+              if (_scrollController.hasClients && _shouldAutoscroll) {
+                _scrollToBottom();
+              }
+              if (!_firstAutoscrollExecuted && _scrollController.hasClients) {
+                _scrollToBottom();
+              }
+            }
           ),
         ],
       ),

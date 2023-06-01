@@ -1,18 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/src/consumer.dart';
-import 'package:superchat/state/ChatState/LoginState.dart';
 
 import '../model/ChatMessageEntity.dart';
 
 class ChatInput extends StatefulWidget {
   final Function(ChatMessageEntity) onSubmit;
-  final ItemList notfier;
 
 
-  ChatInput({Key? key, required this.onSubmit, required
-  this.notfier}) : super(key: key);
+  ChatInput({Key? key, required this.onSubmit}) : super(key: key);
 
   @override
   State<ChatInput> createState() => _ChatInputState();
@@ -37,7 +33,6 @@ class _ChatInputState extends State<ChatInput> {
     if (_selectedImageUrl.isNotEmpty) {
       newChatMessage.imageUrl = _selectedImageUrl;
     }
-    widget.notfier.addItem(newChatMessage);
     widget.onSubmit(newChatMessage);
 
     chatMessageController.clear();
